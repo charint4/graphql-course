@@ -1,0 +1,19 @@
+{
+  "name": "graphql-course",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "bun check"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "graphql": "^17.1.0"
+  }
+}
