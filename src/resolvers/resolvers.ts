@@ -1,80 +1,74 @@
 // db
 import db from "../../_db";
-
+import { GameModel } from "../models/Game";
+import { AuthorModel } from "../models/Author";
+import { ReviewModel } from "../models/Review";
+ 
 const Query = {
-  games() {
-    return db.games;
+  async games() {
+    return await GameModel.find();
   },
-  game(_: any, args: { id: string }) {
-    return db.games.find((game) => game.id === args.id);
+  async game(_: any, args: { id: string }) {
+    return await GameModel.findById(args.id);
   },
-  reviews() {
-    return db.reviews;
+  async reviews() {
+    return await ReviewModel.find();
   },
-  review(_: any, args: { id: string }) {
-    return db.reviews.find((review) => review.id === args.id);
+  async review(_: any, args: { id: string }) {
+    return await ReviewModel.findById(args.id);
   },
-  authors() {
-    return db.authors;
+  async authors() {
+    return await AuthorModel.find();
   },
-  author(_: any, args: { id: string }) {
-    return db.authors.find((author) => author.id === args.id);
+  async author(_: any, args: { id: string }) {
+    return await AuthorModel.findById(args.id);
   },
 };
 
 const Game = {
-  reviews(parent: any) {
-    return db.reviews.filter((review) => review.game_id === parent.id);
+  async reviews(parent: any) {
+    return await ReviewModel.find({ game_id: parent._id });
   },
 };
 
 const Author = {
-  reviews(parent: any) {
-    return db.reviews.filter((review) => review.author_id === parent.id);
+  async reviews(parent: any) {
+    return await ReviewModel.find({ author_id: parent._id });
   }
 };
 
 const Review = {
-  author(parent: any) {
-    return db.authors.find((author) => author.id === parent.author_id);
+  async author(parent: any) {
+    return await AuthorModel.findById(parent.author_id);
   },
-  game(parent: any) {
-    return db.games.find((game) => game.id === parent.game_id);
+  async game(parent: any) {
+    return await GameModel.findById(parent.game_id);
   }
 };
 
 const Mutation = {
-  deleteGame(_: any, args: { id: string }) {
-    db.games = db.games.filter((game) => game.id !== args.id);
-
-    return db.games;
+  async deleteGame(_: any, args: { id: string }) {
+    await GameModel.findByIdAndDelete(args.id);
+    
+    return await GameModel.find();
   },
-  addGame(_: any, args: { game: { title: string; platform: string[] } }) {
-    let game = {
-      ...args.game,
-      id: Math.floor(Math.random() * 100000).toString(),
-    };
-
-    db.games.push(game);
+  async addGame(
+    _: any,
+    args: { game: { title: string; platform: string[] } }
+  ) {
+    const game = await GameModel.create({
+      title: args.game.title,
+      platform: args.game.platform,
+    });
 
     return game;
   },
-  updateGame(
+  async updateGame(
     _: any,
     args: { id: string; update: { title?: string; platform?: string[] } },
   ) {
-    db.games = db.games.map((game) => {
-      if (game.id === args.id) {
-        return {
-          ...game,
-          ...args.update,
-        };
-      }
-
-      return game;
-    });
-
-    return db.games.find((game) => game.id === args.id);
+    const updatedGame = await GameModel.findByIdAndUpdate(args.id, args.update, { new: true });
+    return updatedGame;
   },
 };
 
