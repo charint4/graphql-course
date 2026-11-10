@@ -10,4 +10,4 @@ COPY . .
 ENV PORT=8000
 EXPOSE 8000
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "dev"]
